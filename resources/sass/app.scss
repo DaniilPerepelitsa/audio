@@ -1,0 +1,134 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+input[type="file"] {
+    display: none;
+}
+.button {
+
+    --offset: 10px;
+    --border-size: 2px;
+
+    display: block;
+    position: inherit;
+    text-align: center;
+    padding: 1.5px 3px;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #ffd53d;
+    text-transform: uppercase;
+    letter-spacing: .25em;
+    outline: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 var(--border-size) currentcolor;
+    transition: background .8s ease;
+
+    &:hover {
+        background: rgba(100, 0, 0, .03);
+    }
+
+    &__horizontal,
+    &__vertical {
+        position: absolute;
+        top: var(--horizontal-offset, 0);
+        right: var(--vertical-offset, 0);
+        bottom: var(--horizontal-offset, 0);
+        left: var(--vertical-offset, 0);
+        transition: transform .8s ease;
+        will-change: transform;
+
+        &::before {
+            content: '';
+            position: absolute;
+            border: inherit;
+        }
+    }
+
+    &__horizontal {
+        --vertical-offset: calc(var(--offset) * -1);
+        border-top: var(--border-size) solid currentcolor;
+        border-bottom: var(--border-size) solid currentcolor;
+
+        &::before {
+            top: calc(var(--vertical-offset) - var(--border-size));
+            bottom: calc(var(--vertical-offset) - var(--border-size));
+            left: calc(var(--vertical-offset) * -1);
+            right: calc(var(--vertical-offset) * -1);
+        }
+    }
+
+    &:hover &__horizontal {
+        transform: scaleX(0);
+    }
+
+    &__vertical {
+        --horizontal-offset: calc(var(--offset) * -1);
+        border-left: var(--border-size) solid currentcolor;
+        border-right: var(--border-size) solid currentcolor;
+
+        &::before {
+            top: calc(var(--horizontal-offset) * -1);
+            bottom: calc(var(--horizontal-offset) * -1);
+            left: calc(var(--horizontal-offset) - var(--border-size));
+            right: calc(var(--horizontal-offset) - var(--border-size));
+        }
+    }
+
+    &:hover &__vertical {
+        transform: scaleY(0);
+    }
+
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    input[type='range'] {
+        overflow: hidden;
+        width: 700px;
+        -webkit-appearance: none;
+        background-color: lightgrey;
+        border-radius:50px;
+        cursor: pointer;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+        height: 7px;
+        -webkit-appearance: none;
+        color: red;
+        border-radius:90px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+        width: 5px;
+        height: 15px;
+        -webkit-appearance: none;
+        cursor: pointer;
+        border-radius:20px;
+        background-color: black;
+        box-shadow: -700px 0 0 700px black, 0 0 0 0 black;
+    }
+
+}
+/** FF*/
+input[type="range"]::-moz-range-progress {
+    background-color: #43e5f7;
+}
+input[type="range"]::-moz-range-track {
+    background-color: #9a905d;
+}
+/* IE*/
+input[type="range"]::-ms-fill-lower {
+    background-color: #43e5f7;
+}
+input[type="range"]::-ms-fill-upper {
+    background-color: #9a905d;
+}
+
