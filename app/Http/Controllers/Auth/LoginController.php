@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
@@ -34,6 +35,11 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function login()
+    {
+        return view('auth/login');
+    }
+
     public function github(){
         return Socialite::driver('github')->redirect();
     }
@@ -44,10 +50,10 @@ class LoginController extends Controller
         $user = User::firstOrCreate([
             'email' => $user->email
         ],
-            [
-                'name' => $user->nickname,
-                'password' => Hash::make(Str::random(24))
-            ]);
+        [
+            'name' => $user->nickname,
+            'password' => Hash::make(Str::random(24))
+        ]);
 
         Auth::login($user, true);
 
@@ -56,12 +62,10 @@ class LoginController extends Controller
 
 
     public function facebook(){
-//        dd(Socialite::driver('facebook')->redirect());
         return Socialite::driver('facebook')->redirect();
     }
 
     public function facebookRedirect(){
-//        dd(__METHOD__);
         $user = Socialite::driver('facebook')->user();
 
         $user = User::firstOrCreate([

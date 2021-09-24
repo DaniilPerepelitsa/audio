@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Audio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use wapmorgan\Mp3Info\Mp3Info;
 
@@ -13,12 +14,15 @@ class AudioController extends Controller
         return view('audio/main');
     }
 
+    public function myMusic(){
+        return view('audio/my_music', ['auth_id' => Auth::id()]);
+    }
+
     public function uploadAudio(Request $request){
 
         $audio = new Audio();
 
         foreach ($request->file('file') as $file) {
-
             $path = Storage::disk('mp3')->putFileAs('/', $file, $file->getClientOriginalName());
 //            $url = Storage::disk('mp3')->url($path);
             $track = new Mp3Info(Storage::disk('mp3')->path($path));
@@ -26,6 +30,7 @@ class AudioController extends Controller
             $audio->path = $path;
             $audio->duration = floor($track->duration / 60).'.'.floor($track->duration % 60);
             $audio->duration_in_sec = $track->duration;
+            $audio->user_id = Auth::id();
             $audio->save();
         }
 
@@ -39,7 +44,10 @@ class AudioController extends Controller
 
     public function getPlaylist(){
 
-        $playlist = Audio::paginate(50)->toArray();
+        $playlist = Audio::where('user_id', Auth::id())
+            ->orderBy('id', 'DESC')
+            ->paginate(50)
+            ->toArray();
 
         $playlist['data'] = array_map(function(array $audio) {
             return [

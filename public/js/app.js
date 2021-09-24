@@ -1834,6 +1834,36 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "MyMusic",
+  props: ['auth_id'],
+  data: function data() {
+    return {
+      auth_id: ''
+    };
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/Player.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/Player.vue?vue&type=script&lang=js& ***!
@@ -1962,6 +1992,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Player",
   data: function data() {
@@ -1973,11 +2028,14 @@ __webpack_require__.r(__webpack_exports__);
       currentTime: '',
       player: new Audio(),
       repeat: false,
-      active_btn: 0
+      active_btn: 0,
+      show: false,
+      lastVol: 0
     };
   },
   created: function created() {
     this.getPlayList();
+    console.log(this.songs);
   },
   computed: {
     songs: function songs() {
@@ -2008,46 +2066,50 @@ __webpack_require__.r(__webpack_exports__);
     getTimeOfTrack: function getTimeOfTrack(time) {
       var minutes = Math.floor(time / 60);
       var seconds = time - minutes * 60;
-      this.currentTime = minutes + '.' + parseInt(seconds);
+
+      if (parseInt(seconds) < 10) {
+        this.currentTime = minutes + ':0' + parseInt(seconds);
+      } else {
+        this.currentTime = minutes + ':' + parseInt(seconds);
+      }
     },
     repeatTrack: function repeatTrack() {
       this.repeat = !this.repeat;
-      console.log(this.repeat);
-
-      if (this.repeat) {
-        this.player.loop = true;
-      } else {
-        this.player.loop = false;
-      }
+      this.player.loop = this.repeat;
     },
     play: function play(song) {
       var _this2 = this;
 
-      if (song !== "undefined") {
+      if (typeof song !== 'undefined') {
         this.index = this.songs.indexOf(song);
         this.player.src = this.current.path;
       }
 
+      this.show = true;
+      this.active_btn = this.current.id;
       setInterval(function () {
         return _this2.getTimeOfTrack(_this2.player.currentTime);
-      }, 500);
-      this.player.play();
-      this.active_btn = this.current.id;
-      this.player.addEventListener('ended', function () {
-        this.index++;
+      }, 50);
 
-        if (this.index > this.songs.length - 1) {
-          this.index = 0;
+      if (this.isPlaying && this.active_btn === this.current.id) {
+        this.player.pause();
+      }
+
+      this.player.play();
+      this.player.addEventListener('ended', function () {
+        if (this.player.ended) {
+          this.player.src = this.current.path;
+          this.next();
         }
 
-        this.current = this.songs[this.index];
-        this.play(this.current);
+        this.active_btn = this.current.id;
       }.bind(this));
       this.isPlaying = true;
     },
     pause: function pause() {
       this.player.pause();
       this.isPlaying = false;
+      this.show = false;
     },
     prev: function prev() {
       this.index--;
@@ -2059,13 +2121,30 @@ __webpack_require__.r(__webpack_exports__);
       this.play(this.current);
     },
     next: function next() {
+      var _this3 = this;
+
+      this.player.pause();
       this.index++;
 
       if (this.index > this.songs.length - 1) {
         this.index = 0;
       }
 
-      this.play(this.current);
+      this.active_btn = this.current.id;
+      setTimeout(function () {
+        return _this3.play(_this3.current);
+      }, 500);
+    },
+    durationForUser: function durationForUser(time) {
+      var minutes = Math.floor(time / 60);
+      var seconds = time - minutes * 60;
+      var sep;
+      parseInt(seconds) < 10 ? sep = ':0' : sep = ':';
+      return minutes + sep + parseInt(seconds);
+    },
+    mute: function mute(lastVol) {
+      this.lastVol = lastVol;
+      this.player.volume = 0;
     }
   }
 });
@@ -47349,6 +47428,45 @@ module.exports = function (list, options) {
 
 /***/ }),
 
+/***/ "./resources/js/components/audio/MyMusic.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/audio/MyMusic.vue ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyMusic.vue?vue&type=template&id=0e3b7245& */ "./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245&");
+/* harmony import */ var _MyMusic_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MyMusic.vue?vue&type=script&lang=js& */ "./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _MyMusic_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__.render,
+  _MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/audio/MyMusic.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/audio/Player.vue":
 /*!**************************************************!*\
   !*** ./resources/js/components/audio/Player.vue ***!
@@ -47431,6 +47549,22 @@ component.options.__file = "resources/js/components/audio/Slider.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MyMusic_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./MyMusic.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MyMusic_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/components/audio/Player.vue?vue&type=script&lang=js&":
 /*!***************************************************************************!*\
   !*** ./resources/js/components/audio/Player.vue?vue&type=script&lang=js& ***!
@@ -47489,6 +47623,23 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245&":
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245& ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MyMusic_vue_vue_type_template_id_0e3b7245___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./MyMusic.vue?vue&type=template&id=0e3b7245& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/audio/Player.vue?vue&type=template&id=56943bb6&":
 /*!*********************************************************************************!*\
   !*** ./resources/js/components/audio/Player.vue?vue&type=template&id=56943bb6& ***!
@@ -47519,6 +47670,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Slider_vue_vue_type_template_id_cc8e7fb6___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Slider_vue_vue_type_template_id_cc8e7fb6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Slider.vue?vue&type=template&id=cc8e7fb6& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/Slider.vue?vue&type=template&id=cc8e7fb6&");
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245&":
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/audio/MyMusic.vue?vue&type=template&id=0e3b7245& ***!
+  \*************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "container-full-width",
+      staticStyle: {
+        height: "100%",
+        "background-color": "#1b1e21",
+        color: "white"
+      }
+    },
+    [
+      _c("h3", { staticStyle: { padding: "50px" } }, [
+        _vm._v("MY LIBRARY " + _vm._s(_vm.auth_id))
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
 
 
 /***/ }),
@@ -47567,7 +47758,7 @@ var render = function() {
                 attrs: { href: "/audio/upload" }
               },
               [
-                _vm._v("\n                        Upload "),
+                _vm._v("\n                            Upload "),
                 _c(
                   "svg",
                   {
@@ -47632,390 +47823,536 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _c("main", { staticStyle: { "text-align": "center" } }, [
-      _c(
-        "section",
-        { staticClass: "player" },
-        [
-          _c("transition", { attrs: { name: "fade" } }, [
-            _vm.songs.length !== 0
-              ? _c(
-                  "h2",
-                  {
-                    staticClass: "song-title",
-                    staticStyle: { "margin-top": "30px" }
-                  },
-                  [_vm._v(_vm._s(_vm.current.title))]
-                )
-              : _c(
-                  "h3",
-                  {
-                    staticClass: "song-title",
-                    staticStyle: { "margin-top": "30px" }
-                  },
-                  [_vm._v("You have no tracks yet")]
-                )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "controls" }, [
-            _c("div", { staticClass: "row" }, [
-              _c(
-                "div",
-                {
-                  staticClass: "col-5",
-                  staticStyle: { "text-align": "right" }
-                },
-                [
+    _c(
+      "main",
+      { staticStyle: { "text-align": "center", "min-width": "1500px" } },
+      [
+        _c("section", { staticClass: "player" }, [
+          _c("div", { staticClass: "container-full-width controls" }, [
+            _c(
+              "div",
+              {
+                staticClass: "row",
+                staticStyle: { height: "130px", "min-width": "500px" }
+              },
+              [
+                _c("div", { staticClass: "col-3" }),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-2" }, [
                   _c(
-                    "button",
+                    "div",
                     {
-                      staticClass: "btn btn-dark prev",
+                      staticClass: "row",
                       staticStyle: {
-                        "border-radius": "40px",
-                        height: "40px",
-                        width: "40px"
-                      },
-                      on: { click: _vm.prev }
+                        "margin-top": "40px",
+                        "min-width": "250px",
+                        width: "100%"
+                      }
                     },
                     [
-                      _vm._v(
-                        "\n                            ⏪\n                        "
-                      )
-                    ]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                !_vm.isPlaying
-                  ? _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-success play",
-                        staticStyle: {
-                          "border-radius": "40px",
-                          height: "50px",
-                          width: "50px"
-                        },
-                        on: {
-                          click: function($event) {
-                            return _vm.play("undefined")
-                          }
-                        }
-                      },
-                      [
-                        _vm._v(
-                          "\n                            ►\n                        "
-                        )
-                      ]
-                    )
-                  : _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-success pause",
-                        staticStyle: {
-                          "border-radius": "40px",
-                          height: "50px",
-                          width: "50px",
-                          "text-align": "center"
-                        },
-                        on: { click: _vm.pause }
-                      },
-                      [
-                        _vm._v(
-                          "\n                            ❙❙\n                        "
-                        )
-                      ]
-                    )
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "col-5", staticStyle: { "text-align": "left" } },
-                [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-dark next",
-                      staticStyle: {
-                        "border-radius": "40px",
-                        height: "40px",
-                        width: "40px"
-                      },
-                      on: { click: _vm.next }
-                    },
-                    [
-                      _vm._v(
-                        "\n                            ⏩\n                        "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _vm._m(1),
-                  _vm._v(" "),
-                  _vm.repeat === false
-                    ? _c(
-                        "button",
+                      _c(
+                        "div",
                         {
-                          staticClass: "btn btn-outline-light next",
-                          staticStyle: {
-                            border: "none",
-                            height: "30px",
-                            width: "30px"
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.repeatTrack()
-                            }
-                          }
+                          staticClass: "col-4",
+                          staticStyle: { "text-align": "right" }
                         },
                         [
-                          _c("img", {
-                            staticStyle: { height: "20px", width: "20px" },
-                            attrs: {
-                              src:
-                                "https://img.icons8.com/ios-glyphs/50/000000/replay.png"
-                            }
-                          })
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-dark prev",
+                              staticStyle: {
+                                "border-radius": "40px",
+                                height: "40px",
+                                width: "40px",
+                                "margin-top": "5px"
+                              },
+                              on: { click: _vm.prev }
+                            },
+                            [
+                              _vm._v(
+                                "\n                                        ⏪\n                                    "
+                              )
+                            ]
+                          )
                         ]
-                      )
-                    : _c(
-                        "button",
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
                         {
-                          staticClass: "btn btn-outline-light next",
+                          staticClass: "col-4",
+                          staticStyle: { "text-align": "center" }
+                        },
+                        [
+                          _c(
+                            "transition",
+                            { attrs: { name: "fade", mode: "out-in" } },
+                            [
+                              !_vm.isPlaying
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-success play",
+                                      staticStyle: {
+                                        "border-radius": "40px",
+                                        height: "50px",
+                                        width: "50px"
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.play()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                                            ►\n                                        "
+                                      )
+                                    ]
+                                  )
+                                : _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-success pause",
+                                      staticStyle: {
+                                        "border-radius": "40px",
+                                        height: "50px",
+                                        width: "50px",
+                                        "text-align": "center"
+                                      },
+                                      on: { click: _vm.pause }
+                                    },
+                                    [_c("b", [_vm._v("▮▮")])]
+                                  )
+                            ]
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "col-4",
                           staticStyle: {
-                            border: "none",
-                            height: "30px",
-                            width: "30px"
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.repeatTrack()
-                            }
+                            "text-align": "left",
+                            "margin-top": "5px"
                           }
                         },
                         [
                           _c(
-                            "svg",
+                            "button",
                             {
-                              staticStyle: { fill: "#000000" },
-                              attrs: {
-                                xmlns: "http://www.w3.org/2000/svg",
-                                x: "0px",
-                                y: "0px",
-                                width: "20",
-                                height: "20",
-                                viewBox: "0 0 171 171"
-                              }
+                              staticClass: "btn btn-dark next",
+                              staticStyle: {
+                                "border-radius": "40px",
+                                height: "40px",
+                                width: "40px"
+                              },
+                              on: { click: _vm.next }
                             },
                             [
-                              _c(
-                                "g",
-                                {
-                                  staticStyle: { "mix-blend-mode": "normal" },
-                                  attrs: {
-                                    fill: "none",
-                                    "fill-rule": "nonzero",
-                                    stroke: "none",
-                                    "stroke-width": "1",
-                                    "stroke-linecap": "butt",
-                                    "stroke-linejoin": "miter",
-                                    "stroke-miterlimit": "10",
-                                    "stroke-dasharray": "",
-                                    "stroke-dashoffset": "0",
-                                    "font-family": "none",
-                                    "font-weight": "none",
-                                    "font-size": "none",
-                                    "text-anchor": "none"
-                                  }
-                                },
-                                [
-                                  _c("path", {
-                                    attrs: {
-                                      d:
-                                        "M0,171.99812v-171.99812h171.99812v171.99812z",
-                                      fill: "none"
-                                    }
-                                  }),
-                                  _c(
-                                    "g",
-                                    {
-                                      attrs: {
-                                        id: "original-icon",
-                                        fill: "#000000"
-                                      }
-                                    },
-                                    [
-                                      _c("path", {
-                                        attrs: {
-                                          d:
-                                            "M85.5,14.25c-9.45204,0 -18.50951,1.8521 -26.78137,5.21155v-0.00696c-10.62515,4.31061 -19.91356,11.14157 -27.25452,19.69812l-0.1322,-3.76428c-0.04103,-1.9248 -0.85917,-3.75109 -2.26814,-5.06307c-1.40898,-1.31199 -3.28888,-1.99801 -5.21172,-1.90189c-3.92587,0.1991 -6.94896,3.53976 -6.75623,7.46594l0.74451,21.36108c0.14011,3.93038 3.43803,7.00407 7.36853,6.86756l21.36109,-0.74451c2.59816,-0.01001 4.98493,-1.43336 6.22871,-3.71448c1.24378,-2.28112 1.14741,-5.05841 -0.25151,-7.24783c-1.39892,-2.18942 -3.87862,-3.44389 -6.47122,-3.27377l-4.56445,0.16003c5.98792,-7.26467 13.71791,-13.04741 22.56482,-16.6366h0.00696c6.60497,-2.68255 13.81866,-4.16089 21.41675,-4.16089c31.56407,0 57,25.43593 57,57c0,31.56407 -25.43593,57 -57,57c-31.56407,0 -57,-25.43593 -57,-57c0.03634,-2.56953 -1.31367,-4.95958 -3.53309,-6.25495c-2.21942,-1.29537 -4.96439,-1.29537 -7.18381,0c-2.21942,1.29537 -3.56943,3.68542 -3.53309,6.25495c0,39.26556 31.98444,71.25 71.25,71.25c39.26556,0 71.25,-31.98444 71.25,-71.25c0,-39.26556 -31.98444,-71.25 -71.25,-71.25z"
-                                        }
-                                      })
-                                    ]
-                                  ),
-                                  _c("g", { attrs: { fill: "#000000" } }, [
-                                    _c("path", {
-                                      attrs: {
-                                        d:
-                                          "M91.465,50.57v67.86h-8.63v-57.19l-17.3,6.35v-7.79l24.58,-9.23z"
-                                      }
-                                    })
-                                  ])
-                                ]
+                              _vm._v(
+                                "\n                                        ⏩\n                                    "
                               )
                             ]
                           )
                         ]
                       )
-                ]
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("br"),
-          _vm._v(" "),
-          _c("div", { staticClass: "row" }, [
-            _c("div", {
-              staticClass: "col-1",
-              staticStyle: { "text-align": "center" }
-            }),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "col", staticStyle: { "text-align": "center" } },
-              [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.player.currentTime,
-                      expression: "player.currentTime"
-                    }
-                  ],
-                  attrs: {
-                    type: "range",
-                    max: _vm.current.duration_in_sec,
-                    min: 0,
-                    step: 0.5
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "col",
+                    staticStyle: { "text-align": "left", "min-width": "250px" }
                   },
-                  domProps: { value: _vm.player.currentTime },
-                  on: {
-                    __r: function($event) {
-                      return _vm.$set(
-                        _vm.player,
-                        "currentTime",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "col-1", staticStyle: { "text-align": "left" } },
-              [
-                _vm.currentTime !== ""
-                  ? _c("span", [_vm._v(_vm._s(_vm.currentTime))])
-                  : _c("span", [_vm._v("0.00")])
+                  [
+                    _vm.songs.length !== 0
+                      ? _c(
+                          "h3",
+                          {
+                            staticClass: "song-title",
+                            staticStyle: { "margin-top": "30px" }
+                          },
+                          [_vm._v(_vm._s(_vm.current.title))]
+                        )
+                      : _c(
+                          "h3",
+                          {
+                            staticClass: "song-title",
+                            staticStyle: { "margin-top": "30px" }
+                          },
+                          [_vm._v("You have no tracks yet")]
+                        ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.player.currentTime,
+                          expression: "player.currentTime"
+                        }
+                      ],
+                      staticStyle: {
+                        width: "40%",
+                        "margin-right": "15px",
+                        outline: "none"
+                      },
+                      attrs: {
+                        type: "range",
+                        max: _vm.current.duration_in_sec,
+                        min: 0,
+                        step: 0.5
+                      },
+                      domProps: { value: _vm.player.currentTime },
+                      on: {
+                        __r: function($event) {
+                          return _vm.$set(
+                            _vm.player,
+                            "currentTime",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.currentTime !== ""
+                      ? _c(
+                          "span",
+                          { staticStyle: { "margin-right": "15px" } },
+                          [_vm._v(_vm._s(_vm.currentTime))]
+                        )
+                      : _c(
+                          "span",
+                          { staticStyle: { "margin-right": "15px" } },
+                          [_vm._v("0:00")]
+                        ),
+                    _vm._v(" "),
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _vm.repeat === false
+                      ? _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-outline-light",
+                            staticStyle: {
+                              border: "none",
+                              height: "40px",
+                              width: "40px",
+                              "border-radius": "40px"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.repeatTrack()
+                              }
+                            }
+                          },
+                          [
+                            _c("img", {
+                              staticStyle: { height: "20px", width: "20px" },
+                              attrs: {
+                                src:
+                                  "https://img.icons8.com/ios-glyphs/50/000000/replay.png"
+                              }
+                            })
+                          ]
+                        )
+                      : _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-outline-light",
+                            staticStyle: {
+                              border: "none",
+                              height: "40px",
+                              width: "40px",
+                              "border-radius": "40px"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.repeatTrack()
+                              }
+                            }
+                          },
+                          [
+                            _c(
+                              "svg",
+                              {
+                                staticStyle: { fill: "#000000" },
+                                attrs: {
+                                  xmlns: "http://www.w3.org/2000/svg",
+                                  x: "0px",
+                                  y: "0px",
+                                  width: "20",
+                                  height: "20",
+                                  viewBox: "0 0 171 171"
+                                }
+                              },
+                              [
+                                _c(
+                                  "g",
+                                  {
+                                    staticStyle: { "mix-blend-mode": "normal" },
+                                    attrs: {
+                                      fill: "none",
+                                      "fill-rule": "nonzero",
+                                      stroke: "none",
+                                      "stroke-width": "1",
+                                      "stroke-linecap": "butt",
+                                      "stroke-linejoin": "miter",
+                                      "stroke-miterlimit": "10",
+                                      "stroke-dasharray": "",
+                                      "stroke-dashoffset": "0",
+                                      "font-family": "none",
+                                      "font-weight": "none",
+                                      "font-size": "none",
+                                      "text-anchor": "none"
+                                    }
+                                  },
+                                  [
+                                    _c("path", {
+                                      attrs: {
+                                        d:
+                                          "M0,171.99812v-171.99812h171.99812v171.99812z",
+                                        fill: "none"
+                                      }
+                                    }),
+                                    _c(
+                                      "g",
+                                      {
+                                        attrs: {
+                                          id: "original-icon",
+                                          fill: "#000000"
+                                        }
+                                      },
+                                      [
+                                        _c("path", {
+                                          attrs: {
+                                            d:
+                                              "M85.5,14.25c-9.45204,0 -18.50951,1.8521 -26.78137,5.21155v-0.00696c-10.62515,4.31061 -19.91356,11.14157 -27.25452,19.69812l-0.1322,-3.76428c-0.04103,-1.9248 -0.85917,-3.75109 -2.26814,-5.06307c-1.40898,-1.31199 -3.28888,-1.99801 -5.21172,-1.90189c-3.92587,0.1991 -6.94896,3.53976 -6.75623,7.46594l0.74451,21.36108c0.14011,3.93038 3.43803,7.00407 7.36853,6.86756l21.36109,-0.74451c2.59816,-0.01001 4.98493,-1.43336 6.22871,-3.71448c1.24378,-2.28112 1.14741,-5.05841 -0.25151,-7.24783c-1.39892,-2.18942 -3.87862,-3.44389 -6.47122,-3.27377l-4.56445,0.16003c5.98792,-7.26467 13.71791,-13.04741 22.56482,-16.6366h0.00696c6.60497,-2.68255 13.81866,-4.16089 21.41675,-4.16089c31.56407,0 57,25.43593 57,57c0,31.56407 -25.43593,57 -57,57c-31.56407,0 -57,-25.43593 -57,-57c0.03634,-2.56953 -1.31367,-4.95958 -3.53309,-6.25495c-2.21942,-1.29537 -4.96439,-1.29537 -7.18381,0c-2.21942,1.29537 -3.56943,3.68542 -3.53309,6.25495c0,39.26556 31.98444,71.25 71.25,71.25c39.26556,0 71.25,-31.98444 71.25,-71.25c0,-39.26556 -31.98444,-71.25 -71.25,-71.25z"
+                                          }
+                                        })
+                                      ]
+                                    ),
+                                    _c("g", { attrs: { fill: "#000000" } }, [
+                                      _c("path", {
+                                        attrs: {
+                                          d:
+                                            "M91.465,50.57v67.86h-8.63v-57.19l-17.3,6.35v-7.79l24.58,-9.23z"
+                                        }
+                                      })
+                                    ])
+                                  ]
+                                )
+                              ]
+                            )
+                          ]
+                        ),
+                    _vm._v(" "),
+                    _vm.player.volume === 0
+                      ? _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-outline-light",
+                            staticStyle: {
+                              border: "none",
+                              height: "40px",
+                              width: "40px",
+                              "border-radius": "40px"
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.player.volume = _vm.lastVol
+                              }
+                            }
+                          },
+                          [
+                            _c("img", {
+                              staticStyle: { height: "20px", width: "20px" },
+                              attrs: {
+                                src:
+                                  "https://cdn.icon-icons.com/icons2/1933/PNG/512/iconfinder-volume-mute-sound-speaker-audio-4593175_122269.png"
+                              }
+                            })
+                          ]
+                        )
+                      : _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-outline-light",
+                            staticStyle: {
+                              border: "none",
+                              height: "40px",
+                              width: "40px",
+                              "border-radius": "40px"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.mute(_vm.player.volume)
+                              }
+                            }
+                          },
+                          [
+                            _c("img", {
+                              staticStyle: { height: "20px", width: "20px" },
+                              attrs: {
+                                src:
+                                  "https://cdn.icon-icons.com/icons2/1933/PNG/512/iconfinder-volume-max-sound-speaker-audio-4593170_122277.png"
+                              }
+                            })
+                          ]
+                        ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.player.volume,
+                          expression: "player.volume"
+                        }
+                      ],
+                      staticStyle: {
+                        width: "90px",
+                        height: "4px",
+                        "margin-right": "55px",
+                        outline: "none"
+                      },
+                      attrs: { type: "range", max: 1, min: 0, step: 0.05 },
+                      domProps: { value: _vm.player.volume },
+                      on: {
+                        __r: function($event) {
+                          return _vm.$set(
+                            _vm.player,
+                            "volume",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]
+                )
               ]
             )
           ])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _c(
-        "section",
-        {
-          staticClass: "playlist",
-          staticStyle: { "margin-left": "100px", "margin-right": "100px" }
-        },
-        [
-          _c("h5", [_vm._v("All tracks")]),
-          _vm._v(" "),
-          _c("div", { staticStyle: { width: "80%" } }, [
-            _c(
-              "ul",
-              { staticStyle: { "margin-left": "25%" } },
-              _vm._l(_vm.songs, function(song) {
-                return _c(
-                  "li",
-                  {
-                    key: song.id,
-                    staticStyle: { "list-style": "none", width: "100%" }
-                  },
-                  [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-outline-dark",
-                        class: { active: _vm.active_btn === song.id },
-                        staticStyle: {
-                          width: "100%",
-                          border: "none",
-                          "text-align": "left"
-                        },
-                        attrs: { id: song.id },
-                        on: {
-                          click: function($event) {
-                            return _vm.play(song)
+        ]),
+        _vm._v(" "),
+        _c("hr"),
+        _vm._v(" "),
+        _c(
+          "section",
+          {
+            staticClass: "playlist",
+            staticStyle: { "margin-left": "100px", "margin-right": "100px" }
+          },
+          [
+            _vm.songs.length !== 0
+              ? _c("h6", [_vm._v("ALL TRACKS")])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticStyle: { width: "80%" } }, [
+              _c(
+                "ul",
+                { staticStyle: { "margin-left": "25%" } },
+                _vm._l(_vm.songs, function(song) {
+                  return _c(
+                    "li",
+                    {
+                      key: song.id,
+                      staticStyle: { "list-style": "none", width: "100%" }
+                    },
+                    [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-outline-dark",
+                          class: { active: _vm.active_btn === song.id },
+                          staticStyle: {
+                            width: "100%",
+                            border: "none",
+                            "text-align": "left"
+                          },
+                          attrs: { id: song.id },
+                          on: {
+                            click: function($event) {
+                              return _vm.play(song)
+                            }
                           }
-                        }
-                      },
-                      [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col" }, [
-                            _vm._v(_vm._s(song.title))
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass: "col",
-                              staticStyle: { "text-align": "right" }
-                            },
-                            [_vm._v(_vm._s(parseFloat(song.duration)))]
-                          )
-                        ])
-                      ]
-                    )
-                  ]
-                )
-              }),
-              0
+                        },
+                        [
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col" }, [
+                              _vm.isPlaying && _vm.active_btn === song.id
+                                ? _c(
+                                    "span",
+                                    { staticStyle: { "font-size": "18px" } },
+                                    [_vm._v("▮▮")]
+                                  )
+                                : _c(
+                                    "b",
+                                    { staticStyle: { "font-size": "18px" } },
+                                    [_vm._v("►")]
+                                  ),
+                              _c(
+                                "span",
+                                { staticStyle: { "margin-left": "15px" } },
+                                [_vm._v(_vm._s(song.title))]
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "col",
+                                staticStyle: { "text-align": "right" }
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.durationForUser(song.duration_in_sec)
+                                  )
+                                )
+                              ]
+                            )
+                          ])
+                        ]
+                      )
+                    ]
+                  )
+                }),
+                0
+              )
+            ]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _c(
+              "pagination",
+              {
+                attrs: { data: _vm.pager },
+                on: { "pagination-change-page": _vm.getPlayList }
+              },
+              [
+                _c("span", { attrs: { slot: "prev-nav" }, slot: "prev-nav" }, [
+                  _vm._v("< Previous")
+                ]),
+                _vm._v(" "),
+                _c("span", { attrs: { slot: "next-nav" }, slot: "next-nav" }, [
+                  _vm._v("Next >")
+                ])
+              ]
             )
-          ]),
-          _vm._v(" "),
-          _c("br"),
-          _vm._v(" "),
-          _c("hr"),
-          _vm._v(" "),
-          _c(
-            "pagination",
-            {
-              attrs: { data: _vm.pager },
-              on: { "pagination-change-page": _vm.getPlayList }
-            },
-            [
-              _c("span", { attrs: { slot: "prev-nav" }, slot: "prev-nav" }, [
-                _vm._v("< Previous")
-              ]),
-              _vm._v(" "),
-              _c("span", { attrs: { slot: "next-nav" }, slot: "next-nav" }, [
-                _vm._v("Next >")
-              ])
-            ]
-          )
-        ],
-        1
-      )
-    ])
+          ],
+          1
+        )
+      ]
+    )
   ])
 }
 var staticRenderFns = [
@@ -48036,8 +48373,13 @@ var staticRenderFns = [
     return _c(
       "button",
       {
-        staticClass: "btn btn-outline-light next",
-        staticStyle: { border: "none", height: "30px", width: "30px" }
+        staticClass: "btn btn-outline-light",
+        staticStyle: {
+          border: "none",
+          height: "40px",
+          width: "40px",
+          "border-radius": "40px"
+        }
       },
       [
         _c("img", {
@@ -60280,6 +60622,7 @@ module.exports = yeast;
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var map = {
+	"./components/audio/MyMusic.vue": "./resources/js/components/audio/MyMusic.vue",
 	"./components/audio/Player.vue": "./resources/js/components/audio/Player.vue",
 	"./components/audio/Slider.vue": "./resources/js/components/audio/Slider.vue"
 };

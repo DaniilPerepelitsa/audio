@@ -39,8 +39,6 @@ class LoginController extends Controller
         $token->token->save();
 
 
-//        return redirect('/api/v1/user/all');
-
         return response()->json([
             'user' => Auth::user(),
             'token_type' => 'Bearer',

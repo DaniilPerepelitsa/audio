@@ -89,6 +89,8 @@ input[type="file"] {
 
 }
 
+
+
 @media screen and (-webkit-min-device-pixel-ratio:0) {
     input[type='range'] {
         overflow: hidden;
@@ -132,3 +134,14 @@ input[type="range"]::-ms-fill-upper {
     background-color: #9a905d;
 }
 
+
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}

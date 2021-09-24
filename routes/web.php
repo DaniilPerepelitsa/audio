@@ -1,30 +1,24 @@
 <?php
 
-use App\Events\MessagePushed;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\FBController;
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\MainController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\Stripe\StripePaymentController;
+use App\Http\Controllers\BestInterviewQuestionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TestController;
-use Google\Client;
-use GoogleMaps\GoogleMaps;
-use Illuminate\Routing\Router;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-//use Analytics;
-use Spatie\Analytics\Period;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('audio/player');
 });
 
 Route::get('audio/upload', [AudioController::class, 'uploadForm'])->name('upload.form');
+
 Route::post('audio/upload', [AudioController::class, 'uploadAudio'])->name('upload.audio');
+
+Route::get('audio/mine', [AudioController::class, 'myMusic'])->name('my.music');
 
 Route::get('audio/player', [AudioController::class, 'playerView'])->name('player');
 Route::get('api/play-list', [AudioController::class, 'getPlaylist'])->name('get.playlist');
@@ -32,9 +26,8 @@ Route::get('api/play-list', [AudioController::class, 'getPlaylist'])->name('get.
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->name('logout');
-
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => 'guest'],
     function (){
@@ -47,4 +40,11 @@ Route::group(['middleware' => 'guest'],
 
 Route::get('/test', [TestController::class, 'test'])->name('test');
 
+Route::get('/sign_in', [\App\Http\Controllers\Api\Auth\LoginController::class, 'loginView']);
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 
+Route::get('/qr', function (){
+    \SimpleSoftwareIO\QrCode\Facades\QrCode::size(250)->format('png')->generate('Hello', public_path('images/qrcode.png'));
+});
+
+Route::get('/pdfview', [BestInterviewQuestionController::class, 'pdfview'])->name('pdfview');
